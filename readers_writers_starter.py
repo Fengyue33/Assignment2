@@ -88,8 +88,13 @@ class ReadersWritersMonitor:
         4. Print a useful log message.
         """
         with self.condition:
-            # TODO: Replace 'pass' with your logic
-            pass
+            #wait first，then check active_readers and active_writers
+            self.waiting_writers += 1
+            while self.active_readers > 0 or self.active_writers > 0:
+                self.condition.wait()#release lock and wait for notification
+            self.waiting_writers -= 1
+            self.active_writers += 1
+            print(f"Writer {writer_id} starting to write (waiting writers: {self.waiting_writers})")
 
     def end_write(self, writer_id: int) -> None:
         """
