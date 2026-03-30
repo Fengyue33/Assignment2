@@ -54,8 +54,11 @@ class ReadersWritersMonitor:
         4. Print a useful log message.
         """
         with self.condition:
-            # TODO: Replace 'pass' with your logic
-            pass
+            # No need to check active_readers, as readers can read together
+            while self.active_writers > 0:
+                self.condition.wait()
+            self.active_readers += 1
+            print(f"Reader {reader_id} starting to read (active readers: {self.active_readers})")
 
     def end_read(self, reader_id: int) -> None:
         """
